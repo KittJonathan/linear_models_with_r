@@ -5,6 +5,7 @@
 # Packages ----
 
 library(tidyverse)
+library(HistData)
 
 # Initial data analysis ----
 
@@ -82,3 +83,30 @@ solve(cbind(9,moon3$sinang,moon3$cosang), moon3$arc)
 
 lmod <- lm(arc ~ sinang + cosang, manilius)
 coef(lmod)
+
+# Galton's regression to the mean
+
+data("GaltonFamilies", package = "HistData")
+plot(childHeight ~ midparentHeight, GaltonFamilies)
+
+lmod <- lm(childHeight ~ midparentHeight, GaltonFamilies)
+coef(lmod)
+abline(lmod)
+
+# (y - mean(y)) / sd(y) = r * (x - mean(x)) / sd(x)
+# r: correlation between x and y
+
+# y = alpha + beta * x
+
+(beta <-with(GaltonFamilies, cor(midparentHeight, childHeight) * sd
+             (childHeight) / sd(midparentHeight)))
+
+(alpha <-with(GaltonFamilies, mean(childHeight)-beta * mean(
+  midparentHeight)))
+
+# set r = 1
+(beta1 <-with(GaltonFamilies, sd(childHeight) / sd(midparentHeight)
+))
+(alpha1 <-with(GaltonFamilies, mean(childHeight)-beta1 * mean(
+  midparentHeight)))
+abline(alpha1, beta1, lty=2)
